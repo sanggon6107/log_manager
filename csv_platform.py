@@ -8,6 +8,7 @@ class CsvFile :
     def print_out(self) :
         print(self.data)
     
+    # merge된 로그에서 인덱스 행 모두 제거
     def pre_process(self) :
         drop_list = []
         for i in range(len(self.data)) :
@@ -15,8 +16,21 @@ class CsvFile :
                 drop_list.append(i)
         
         self.data.drop(drop_list, axis = 0, inplace = True)
+        self.data.reset_index(drop = True, inplace = True)
+    
+    # 인덱스 기준으로 정렬
+    def data_sort(self, idx) :
+        self.data.sort_values(by = [idx], inplace = True, ascending = True, kind = 'quicksort')
+        self.data.reset_index(drop = True, inplace = True)
+
+    def data_duplicate(self, idx) :
+        self.data.drop_duplicates([idx], inplace = True, keep = 'first', ignore_index = True)
+        #self.data.reset_index(drop = True, inplace = True)
 
 if __name__ == "__main__" :
     data = CsvFile("input.csv")
     data.pre_process()
     data.print_out()
+    data.data_sort("globalTime")
+    data.print_out()
+    data.data_duplicate("sensorID")
