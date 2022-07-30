@@ -20,12 +20,10 @@ class CsvFile :
     
     # 인덱스 기준으로 정렬
     def data_sort(self, idx) :
-        self.data.sort_values(by = [idx], inplace = True, ascending = True, kind = 'quicksort')
-        self.data.reset_index(drop = True, inplace = True)
+        self.data.sort_values(by = [idx], inplace = True, ascending = True, kind = 'quicksort', ignore_index = True)
 
     def data_duplicate(self, idx) :
-        self.data.drop_duplicates([idx], inplace = True, keep = 'first', ignore_index = True)
-        #self.data.reset_index(drop = True, inplace = True)
+        self.data.drop_duplicates(subset = idx, inplace = True, keep = "first", ignore_index = True)
 
 if __name__ == "__main__" :
     data = CsvFile("input.csv")
@@ -34,3 +32,4 @@ if __name__ == "__main__" :
     data.data_sort("globalTime")
     data.print_out()
     data.data_duplicate("sensorID")
+    data.print_out()
