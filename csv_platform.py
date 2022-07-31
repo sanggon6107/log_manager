@@ -22,7 +22,7 @@ class csv_file :
     def data_sort(self, idx) :
         self.data.sort_values(by = [idx], inplace = True, ascending = True, kind = 'quicksort', ignore_index = True)
 
-    # 컬럼 기준으로 중복 제거
+    # 컬럼 기준으로 중복 제거. 시간순 정렬은 되어있다고 가정한다.
     def data_duplicate(self, idx) :
         try :
             self.data.drop_duplicates(subset = idx, inplace = True, keep = "first", ignore_index = True)
