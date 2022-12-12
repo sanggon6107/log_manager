@@ -4,8 +4,32 @@ import glob
 import math
 import pandas as pd
 
+import csv_platform
+
+
+DATA = 1
+
 SENSOR_ID = 5
 KEY = 6
+
+
+class PassSweepPicker :
+    def __init__(self, calc_result_file_name) :
+        self.calc_result = csv_platform.csv_file(calc_result_file_name)
+        self.calc_result.remove_index()
+
+        self.result_list = []
+
+    def Pick(self, file_list) :
+        for file in file_list :
+            csv = pd.read_csv(file, nrows=2)
+            # csv['GlobalTime'][DATA] : 스윕의 글로벌타임.
+            # 일단 센서id를 찾는다.
+            # 그다음 글로벌아이디 일치하는것 찾는다. 정확성을 위해 둘다 일치하는 것을 조건으로 하자.
+            # 만약 둘다 일치한다면 결과 파일 리스트에 넣는다.
+            
+
+
 class XYSweepPlotter :
     def __init__(self) :
         # 인풋 파일 리스트
@@ -18,6 +42,13 @@ class XYSweepPlotter :
         # 최종 결과물
         self.log1_selected_file_list
         self.log2_selected_file_list
+
+        # log1, log2의 calculation 결과물
+        self.log1_calc_result = csv_platform.csv_file("~.csv")
+        self.log2_calc_result = csv_platform.csv_file("~.csv")
+
+        self.log1_calc_result.remove_index()
+        self.log2_calc_result.remove_index()
 
     def GetTestLogs(self, log1_file_list, log2_file_list) :
         log1_sensor_id_list = [i.split('_')[SENSOR_ID] for i in sorted(log1_file_list)]
@@ -47,6 +78,7 @@ def DrawPlots(log1_file_list, log2_file_list, pdf_name) :
             log2_df = pd.read_csv(log2_file)
             
             # ...calculation....
+
 
 
 
