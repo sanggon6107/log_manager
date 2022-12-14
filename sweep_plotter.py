@@ -26,7 +26,7 @@ class PassSweepPicker :
     def Pick(self, file_list) :
         for sweep_file in file_list :
             sweep = pd.read_csv(sweep_file, nrows=2)
-            if len(self.calc_result.data.where(self.calc_result.data['sensorID'] == sweep_file.split('_')[SENSOR_ID] and self.calc_result.data['GlobalTime'] == sweep.loc[DATA]['GlobalTime'])) != 0 :
+            if len(self.calc_result.data.where((self.calc_result.data['sensorID'] == sweep_file.split('_')[SENSOR_ID]) & (self.calc_result.data['GlobalTime'] == sweep.loc[DATA]['GlobalTime']))) != 0 :
                 self.result_list.append(sweep_file)
 
         return self.result_list
