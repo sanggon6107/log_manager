@@ -26,37 +26,32 @@ class PassSweepPicker :
     def Pick(self, file_list) :
         for sweep_file in file_list :
             sweep = pd.read_csv(sweep_file, nrows=2)
-            
-            for row in range(len(self.calc_result.data)) :
-                if self.calc_result.data.loc[row]['sensorID'] != sweep_file.split('_')[SENSOR_ID] : continue
-                if self.calc_result.data.loc[row]['GlobalTime'] != sweep.loc[DATA]['GlobalTime'] : continue
-
+            if len(self.calc_result.data.where(self.calc_result.data['sensorID'] == sweep_file.split('_')[SENSOR_ID] and self.calc_result.data['GlobalTime'] == sweep.loc[DATA]['GlobalTime'])) != 0 :
                 self.result_list.append(sweep_file)
-        
+
         return self.result_list
 
 
 class XYSweepPlotter :
     def __init__(self) :
         # 인풋 파일 리스트
-        self.log1_file_list
-        self.log2_file_list
+        #self.log1_file_list
+        #self.log2_file_list
 
         # 이너조인 결과물
-        self.inner_joined_list
+        #self.inner_joined_list
 
         # 패스 필터링 전 결과물
-        self.log1_selected_file_list
-        self.log2_selected_file_list
+        #self.log1_selected_file_list
+        #elf.log2_selected_file_list
 
         # PASS 스윕 픽커. 
         self.log1_pass_sweep_picker = PassSweepPicker("log1_calculation_result.csv")
         self.log2_pass_sweep_picker = PassSweepPicker("log2_calculation_result.csv")
         
         # 패스 필터링 된 결과물
-
-        self.log1_pass_sweep_file_list
-        self.log2_pass_sweep_file_list
+        #self.log1_pass_sweep_file_list
+        #self.log2_pass_sweep_file_list
 
     def GetTestLogs(self, log1_file_list, log2_file_list) :
         log1_sensor_id_list = [i.split('_')[SENSOR_ID] for i in sorted(log1_file_list)]
