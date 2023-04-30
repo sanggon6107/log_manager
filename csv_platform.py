@@ -87,12 +87,11 @@ class ColumnIntegrator :
                 split_start = row
             self.__df_list.append(self.log.split_csv(row_begin=split_start, row_end=len(self.log.data)))
 
+            self.__df_list.sort(key=lambda x : len(x.columns), reverse=True)
+            result = pd.concat(self.__df_list, ignore_index=True)
 
-            result = self.__df_list[0]
-            for target_df in range(1, len(self.__df_list)) :
-                result = pd.concat([result, self.__df_list[target_df]], ignore_index=True)
+            result.to_csv("Result.csv", index=None)
 
-            result.to_csv("Result.csv", index=None)        
         except Exception as e :
             print("Exception : ", e)
 
