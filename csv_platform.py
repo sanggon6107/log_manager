@@ -1,9 +1,17 @@
 from mimetypes import init
 import pandas as pd
+import csv
 
 class CsvFile :
     def __init__(self, file_name, no_header=False) :
-        if no_header : self.data = pd.read_csv(file_name, header=None)
+        if no_header :
+            f = open(file_name, encoding='utf-8')
+            reader = csv.reader(f)
+            csv_list = []
+            for i in reader :
+                csv_list.append(i)
+            f.close()
+            self.data = pd.DataFrame(csv_list)
         else : self.data = pd.read_csv(file_name)
 
     def print_out(self) :
