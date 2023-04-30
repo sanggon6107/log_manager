@@ -1,9 +1,10 @@
 from mimetypes import init
 import pandas as pd
 
-class csv_file :
-    def __init__(self, file_name) :
-        self.data = pd.read_csv(file_name)
+class CsvFile :
+    def __init__(self, file_name, no_header=False) :
+        if no_header : self.data = pd.read_csv(file_name, header=None)
+        else : self.data = pd.read_csv(file_name)
 
     def print_out(self) :
         print(self.data)
@@ -33,12 +34,22 @@ class csv_file :
     def data_to_csv(self, filename) :
         self.data.to_csv(filename, index = None)
 
+    # header=None 인 데이터에 대하여 특정 범위의 행만 추출
+    def split_csv(self, row_begin, row_end) -> pd.DataFrame :
+        ret_temp = self.data.iloc[row_begin:row_end,:]
+        ret_temp.rename(columns=ret_temp.iloc[0], inplace=True)
+        ret_temp.drop(ret_temp.index[0], inplace=True)
+        ret_temp.reset_index(drop = True, inplace = True)
+        ret_temp.dropna(how='all', axis='columns', inplace=True)
+
+        return ret_temp
 
 
-class log_refiner :
+
+class LogRefiner :
     def __init__(self, data_name, nvm_name) :
-        self.data = csv_file(data_name)
-        self.nvm = csv_file(nvm_name)
+        self.data = CsvFile(data_name)
+        self.nvm = CsvFile(nvm_name)
     
     # 초검 데이터만 추출
     def refine(self) :
@@ -62,6 +73,34 @@ class log_refiner :
         self.data.data.reset_index(drop = True, inplace = True)
 
 
+class ColumnIntegrator :
+    def __init__(self, file_name) :
+        self.log = CsvFile(file_name, no_header=True)
+        self.__df_list = []
+
+    def execute(self) :
+        try :
+            split_start = 0
+            for row in range(1, len(self.log.data)) :
+                if self.log.data.iloc[row][0] != self.log.data.iloc[0][0] : continue
+                self.__df_list.append(self.log.split_csv(row_begin=split_start, row_end=row))
+                split_start = row
+            self.__df_list.append(self.log.split_csv(row_begin=split_start, row_end=len(self.log.data)))
+
+
+            result = self.__df_list[0]
+            for target_df in range(1, len(self.__df_list)) :
+                result = pd.concat([result, self.__df_list[target_df]], ignore_index=True)
+
+            result.to_csv("Result.csv", index=None)        
+        except Exception as e :
+            print("Exception : ", e)
+
 if __name__ == "__main__" :
-    log = log_refiner("input.csv", "nvm.csv")
-    log.refine()
+    #log = log_refiner("input.csv", "nvm.csv")
+    #log.refine()
+    # a = pd.read_csv("input.csv", header=None)
+
+
+    a = ColumnIntegrator("input.csv")
+    a.execute()
