@@ -1,6 +1,7 @@
 from mimetypes import init
 import pandas as pd
 import csv
+import copy
 
 class CsvFile :
     def __init__(self, file_name, no_header=False) :
@@ -86,6 +87,19 @@ class ColumnIntegrator :
         self.log = CsvFile(file_name, no_header=True)
         self.__df_list = []
 
+    def __sort_headers(self) -> pd.DataFrame :
+        headers_list = []
+        for df in self.__df_list :
+            headers_list.append(list(df.columns))
+
+        result = list(copy.deepcopy(headers_list[0]))
+        for header in headers_list :
+            for idx in range(0, len(header)) :
+                if header[idx] in result : continue
+                result.insert(result.index(header[idx - 1]) + 1, header[idx])
+
+        return result
+
     def execute(self) :
         try :
             split_start = 0
@@ -98,10 +112,16 @@ class ColumnIntegrator :
             self.__df_list.sort(key=lambda x : len(x.columns), reverse=True)
             result = pd.concat(self.__df_list, ignore_index=True)
 
+            sorted_headers = self.__sort_headers()
+            result = result.reindex(columns = sorted_headers)
+            
             result.to_csv("Result.csv", index=None)
-
+        
         except Exception as e :
             print("Exception : ", e)
+
+    
+
 
 if __name__ == "__main__" :
     #log = log_refiner("input.csv", "nvm.csv")
@@ -111,3 +131,11 @@ if __name__ == "__main__" :
 
     a = ColumnIntegrator("input.csv")
     a.execute()
+
+
+    # 대책
+    # 시나리오1
+    # result/Fail item~10이 마지막 컬럼이 아니다?
+    # -> 먼저, 마지막에 붙어있는 그 컬럼이 어디에 있었는지 찾아본다.
+    # -> 예를들어 Data2 뒤에 있었다고 하자.
+    # -> 그러면 Data2에 있도록 다시 붙여준다.
