@@ -124,18 +124,5 @@ class ColumnIntegrator :
 
 
 if __name__ == "__main__" :
-    #log = log_refiner("input.csv", "nvm.csv")
-    #log.refine()
-    # a = pd.read_csv("input.csv", header=None)
-
-
     a = ColumnIntegrator("input.csv")
     a.execute()
-
-
-    # 대책
-    # 시나리오1
-    # result/Fail item~10이 마지막 컬럼이 아니다?
-    # -> 먼저, 마지막에 붙어있는 그 컬럼이 어디에 있었는지 찾아본다.
-    # -> 예를들어 Data2 뒤에 있었다고 하자.
-    # -> 그러면 Data2에 있도록 다시 붙여준다.
